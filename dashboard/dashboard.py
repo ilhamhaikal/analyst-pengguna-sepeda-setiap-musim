@@ -26,6 +26,14 @@ with st.sidebar:
 # Filter data sesuai rentang waktu
 filtered_data = data[(data['dteday'] >= pd.to_datetime(start_date)) & (data['dteday'] <= pd.to_datetime(end_date))]
 
+# Mapping nama cuaca dan musim
+weather_mapping = {1: 'Clear', 2: 'Mist', 3: 'Light Snow/Rain'}
+season_mapping = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
+
+# Mengganti nilai angka dengan nama di kolom cuaca dan musim
+filtered_data['weathersit_x'] = filtered_data['weathersit_x'].map(weather_mapping)
+filtered_data['season'] = filtered_data['season'].map(season_mapping)
+
 # Daily Bike Users
 def create_daily_bike_usage_df(df):
     daily_bike_usage_df = df.resample(rule='D', on='dteday').agg({
@@ -60,17 +68,7 @@ sns.barplot(x="weathersit_x", y="bike_usage_count", data=weather_usage_df, palet
 ax.set_title("Penggunaan Sepeda Berdasarkan Kondisi Cuaca")
 st.pyplot(fig)
 
-total_bike_usage = daily_bike_usage_df['bike_usage_count'].sum()
-average_daily_usage = daily_bike_usage_df['bike_usage_count'].mean()
-
-col1, col2 = st.columns(2)
-with col1:
-    st.metric("Total Pengguna Sepeda", total_bike_usage)
-with col2:
-    st.metric("Rata-rata Pemakaian Harian", round(average_daily_usage, 2))
-
-# Additional visualizations
-# 1. Penggunaan Sepeda Berdasarkan Musim
+# Penggunaan Sepeda Berdasarkan Musim
 season_usage_df = filtered_data.groupby('season').agg({
     "cnt_x": "sum"
 }).reset_index()
@@ -80,41 +78,4 @@ st.subheader('Penggunaan Sepeda Berdasarkan Musim')
 fig, ax = plt.subplots(figsize=(10, 6))
 sns.barplot(x="season", y="bike_usage_count", data=season_usage_df, palette="coolwarm", ax=ax)
 ax.set_title("Penggunaan Sepeda Berdasarkan Musim")
-st.pyplot(fig)
-
-# 2. Penggunaan Sepeda Berdasarkan Hari dalam Seminggu
-filtered_data['day_of_week'] = filtered_data['dteday'].dt.day_name()
-day_usage_df = filtered_data.groupby('day_of_week').agg({
-    "cnt_x": "sum"
-}).reset_index()
-day_usage_df.rename(columns={"cnt_x": "bike_usage_count"}, inplace=True)
-
-st.subheader('Penggunaan Sepeda Berdasarkan Hari dalam Seminggu')
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.barplot(x="day_of_week", y="bike_usage_count", data=day_usage_df, palette="magma", ax=ax)
-ax.set_title("Penggunaan Sepeda Berdasarkan Hari dalam Seminggu")
-st.pyplot(fig)
-
-# 3. Penggunaan Sepeda dan Suhu
-st.subheader('Penggunaan Sepeda dan Suhu')
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.scatterplot(x="temp_x", y="cnt_x", data=filtered_data, hue="weathersit_x", palette="coolwarm", ax=ax)
-ax.set_title("Penggunaan Sepeda dan Suhu")
-ax.set_xlabel("Suhu")
-ax.set_ylabel("Jumlah Penggunaan Sepeda")
-st.pyplot(fig)
-
-# 4. Penggunaan Sepeda Berdasarkan Bulan
-filtered_data['month'] = filtered_data['dteday'].dt.month
-month_usage_df = filtered_data.groupby('month').agg({
-    "cnt_x": "sum"
-}).reset_index()
-month_usage_df.rename(columns={"cnt_x": "bike_usage_count"}, inplace=True)
-
-st.subheader('Penggunaan Sepeda Berdasarkan Bulan')
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.lineplot(x="month", y="bike_usage_count", data=month_usage_df, marker="o", ax=ax)
-ax.set_title("Penggunaan Sepeda Berdasarkan Bulan")
-ax.set_xlabel("Bulan")
-ax.set_ylabel("Jumlah Penggunaan Sepeda")
 st.pyplot(fig)
