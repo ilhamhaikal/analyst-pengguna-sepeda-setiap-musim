@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
-# Load data
-data = pd.read_csv(r"D:\belajar program\submission\data\all_data_bike.csv")
+# URL dataset dari GitHub (pastikan URL adalah versi raw file)
+url = 'https://raw.githubusercontent.com/ilhamhaikal/file/main/all_data_bike.csv'
+
+# Load data langsung dari URL
+data = pd.read_csv(url)
 
 # Convert 'dteday' to datetime
 data['dteday'] = pd.to_datetime(data['dteday'])
