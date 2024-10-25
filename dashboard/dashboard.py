@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
-# Load data
-data = pd.read_csv(r"D:\belajar program\submission\data\all_data_bike.csv")
+# URL dataset dari GitHub (pastikan URL adalah versi raw file)
+url = 'https://raw.githubusercontent.com/ilhamhaikal/file/main/all_data_bike.csv'
+
+# Load data langsung dari URL
+data = pd.read_csv(url)
 
 # Convert 'dteday' to datetime
 data['dteday'] = pd.to_datetime(data['dteday'])
@@ -68,7 +71,7 @@ sns.barplot(x="weathersit_x", y="bike_usage_count", data=weather_usage_df, palet
 ax.set_title("Penggunaan Sepeda Berdasarkan Kondisi Cuaca")
 st.pyplot(fig)
 
-# Penggunaan Sepeda Berdasarkan Musim
+# Analisis Persewaan Sepeda Berdasarkan Musim
 season_usage_df = filtered_data.groupby('season').agg({
     "cnt_x": "sum"
 }).reset_index()
@@ -78,4 +81,19 @@ st.subheader('Penggunaan Sepeda Berdasarkan Musim')
 fig, ax = plt.subplots(figsize=(10, 6))
 sns.barplot(x="season", y="bike_usage_count", data=season_usage_df, palette="coolwarm", ax=ax)
 ax.set_title("Penggunaan Sepeda Berdasarkan Musim")
+st.pyplot(fig)
+
+# Analisis Fluktuasi Persewaan Sepeda pada Jam-jam Berbeda di Hari Kerja
+workday_data = filtered_data[filtered_data['workingday_x'] == 1]
+hourly_usage_df = workday_data.groupby('hr').agg({
+    "cnt_x": "sum"
+}).reset_index()
+hourly_usage_df.rename(columns={"cnt_x": "bike_usage_count"}, inplace=True)
+
+st.subheader('Fluktuasi Persewaan Sepeda pada Jam-Jam Berbeda di Hari Kerja')
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.lineplot(x="hr", y="bike_usage_count", data=hourly_usage_df, marker='o', ax=ax)
+ax.set_title("Fluktuasi Persewaan Sepeda pada Jam-Jam Berbeda di Hari Kerja")
+ax.set_xlabel('Jam')
+ax.set_ylabel('Total Penggunaan Sepeda')
 st.pyplot(fig)

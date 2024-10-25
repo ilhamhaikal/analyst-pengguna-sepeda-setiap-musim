@@ -2,6 +2,8 @@
 
 Proyek ini adalah dasbor untuk memvisualisasikan data berbagi sepeda. Proyek ini menggunakan `Streamlit` untuk antarmuka web dan menyediakan visualisasi interaktif penggunaan sepeda berdasarkan berbagai faktor seperti cuaca, musim, dan lainnya.
 
+git add README.md dashboard/dashboard.py data/all_data_bike.csv url.txt
+
 ## Fitur
 
 - Visualisasikan penggunaan sepeda berdasarkan tanggal
